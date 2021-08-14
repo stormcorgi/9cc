@@ -67,7 +67,7 @@ struct Node {
   Node *lhs;      // 左辺
   Node *rhs;      // 右辺
   int val;        // kindがND_NUMの時だけ使う
-  int offset;     // kindがND_LVARの時に使う
+  char name;      // kindがND_LVARの時使用
 };
 
 Node *program();

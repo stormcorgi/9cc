@@ -26,6 +26,12 @@ Node *new_num(int val) {
   return node;
 }
 
+Node *new_lvar(char name) {
+  Node *node = new_node(ND_LVAR);
+  node->name = name;
+  return node;
+}
+
 Node *stmt();
 Node *expr();
 Node *assign();
@@ -138,6 +144,7 @@ Node *unary() {
   return primary();
 }
 
+// primary = "(" expr ")" | ident | num
 Node *primary() {
   // 次のトークンが"("なら "(" expr ")" となっているはず
   if (consume("(")) {
@@ -146,7 +153,10 @@ Node *primary() {
     return node;
   }
 
-  // Token *tok = consume_ident();
+  Token *tok = consume_ident();
+  if (tok) {
+    return new_lvar(*tok->str);
+  }
   // そうでないなら、数値のはず
   return new_num(expect_number());
 }
