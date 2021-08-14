@@ -44,6 +44,15 @@ extern Token *token;
 //
 // parse.c
 //
+
+// Local Variable type
+typedef struct Var Var;
+struct Var {
+  Var *next; // 次の変数 or NULL
+  char *name; // 変数名
+  int offset; // RBPからのオフセット(Relational Base Posetion)
+};
+
 typedef enum {
   ND_ADD,     // +
   ND_SUB,     // -
@@ -54,10 +63,12 @@ typedef enum {
   ND_LT,      // <
   ND_LE,      // <=
   ND_ASSIGN,  // =
-  ND_LVAR,    // local variable
+  ND_VAR,     // variable
   ND_RETURN,  // "return"
+  ND_EXPR_STMT,// Expression statement
   ND_NUM,     // Integer
 } NodeKind;
+
 
 // AST node type
 typedef struct Node Node;
@@ -67,13 +78,19 @@ struct Node {
   Node *lhs;      // 左辺
   Node *rhs;      // 右辺
   int val;        // kindがND_NUMの時だけ使う
-  char name;      // kindがND_LVARの時使用
+  Var *var;      // kindがND_VARの時使用
 };
 
-Node *program();
+typedef struct {
+  Node *node;
+  Var *locals;
+  int stack_size;
+} Program;
+
+Program *program();
 
 //
 // codegen.c
 //
 
-void codegen(Node *node);
+void codegen(Program *prog);
