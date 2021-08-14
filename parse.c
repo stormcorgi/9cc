@@ -42,8 +42,6 @@ Node *mul();
 Node *unary();
 Node *primary();
 
-Node *code[100];
-
 Node *program() {
   Node head;
   head.next = NULL;
@@ -71,7 +69,7 @@ Node *stmt() {
   return node;
 }
 
-// expr = ezuality()
+// expr = assign()
 Node *expr() { return assign(); }
 
 // assign = equality ("=" assign)?
