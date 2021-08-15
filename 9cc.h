@@ -70,6 +70,7 @@ typedef enum {
   ND_NUM,        // Integer
   ND_WHILE,      //"while"
   ND_FOR,        //"for"
+  ND_BLOCK,      // {}
 } NodeKind;
 
 // AST node type
@@ -87,6 +88,8 @@ struct Node {
   Node *els;
   Node *init;
   Node *inc;
+  // block
+  Node *body;
 };
 
 typedef struct {
