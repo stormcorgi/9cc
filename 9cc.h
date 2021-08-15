@@ -71,6 +71,7 @@ typedef enum {
   ND_WHILE,      //"while"
   ND_FOR,        //"for"
   ND_BLOCK,      // {}
+  ND_FUNCALL,    // Function call
 } NodeKind;
 
 // AST node type
@@ -80,8 +81,6 @@ struct Node {
   Node *next;     // 次のノード
   Node *lhs;      // 左辺
   Node *rhs;      // 右辺
-  int val;        // kindがND_NUMの時だけ使う
-  Var *var;       // kindがND_VARの時使用
   // if or while or for statement
   Node *cond;
   Node *then;
@@ -90,6 +89,10 @@ struct Node {
   Node *inc;
   // block
   Node *body;
+  // function call
+  char *funcname;
+  Var *var;  // kind == ND_VAR
+  int val;   // kind == ND_NUM
 };
 
 typedef struct {

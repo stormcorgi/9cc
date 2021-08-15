@@ -224,7 +224,8 @@ Node *unary() {
   return primary();
 }
 
-// primary = "(" expr ")" | ident | num
+// primary = "(" expr ")" | ident args? | num
+// args = "(" ")"
 Node *primary() {
   // 次のトークンが"("なら "(" expr ")" となっているはず
   if (consume("(")) {
@@ -235,12 +236,22 @@ Node *primary() {
 
   Token *tok = consume_ident();
   if (tok) {
+    // func call without arity
+    if (consume("(")) {
+      expect(")");
+      Node *node = new_node(ND_FUNCALL);
+      node->funcname = strndup(tok->str, tok->len);
+      return node;
+    }
+
+    // ident already used?
     Var *var = find_var(tok);
     if (!var) {
       var = push_var(strndup(tok->str, tok->len));
     }
     return new_var(var);
   }
-  // そうでないなら、数値のはず
+
+  // then, expect num
   return new_num(expect_number());
 }
