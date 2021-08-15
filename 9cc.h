@@ -14,7 +14,7 @@ typedef enum {
   TK_RESERVED,  // 記号
   TK_IDENT,     // 識別子
   TK_NUM,       // 整数トークン
-  TK_EOF,       // 入力の終わりを表すトークン
+  TK_EOF,       // 入力
 } TokenKind;
 
 // token type
@@ -68,6 +68,7 @@ typedef enum {
   ND_IF,         // if statement
   ND_EXPR_STMT,  // Expression statement
   ND_NUM,        // Integer
+  ND_WHILE,      //"while"
 } NodeKind;
 
 // AST node type
@@ -79,7 +80,7 @@ struct Node {
   Node *rhs;      // 右辺
   int val;        // kindがND_NUMの時だけ使う
   Var *var;       // kindがND_VARの時使用
-  // if statement
+  // if or while statement
   Node *cond;
   Node *then;
   Node *els;

@@ -64,4 +64,6 @@ assert 2 'a=2;z=10; if(a<z) return 2; else return z-a;'
 assert 8 'a=2;z=10; if(a>=z) return 2; else return z-a;'
 assert 2 'a=2;z=2; if(a>=z) return 2; else return z-a;'
 
+assert 10 'i=0; while(i<10) i=i+1; return i;'
+
 echo OK
