@@ -69,6 +69,7 @@ typedef enum {
   ND_EXPR_STMT,  // Expression statement
   ND_NUM,        // Integer
   ND_WHILE,      //"while"
+  ND_FOR,        //"for"
 } NodeKind;
 
 // AST node type
@@ -80,10 +81,12 @@ struct Node {
   Node *rhs;      // 右辺
   int val;        // kindがND_NUMの時だけ使う
   Var *var;       // kindがND_VARの時使用
-  // if or while statement
+  // if or while or for statement
   Node *cond;
   Node *then;
   Node *els;
+  Node *init;
+  Node *inc;
 };
 
 typedef struct {

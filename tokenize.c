@@ -81,7 +81,7 @@ bool startswith(char *p, char *q) { return memcmp(p, q, strlen(q)) == 0; }
 
 char *starts_with_reserved(char *p) {
   // keyword
-  static char *kw[] = {"return", "if", "else", "while"};
+  static char *kw[] = {"return", "if", "else", "while", "for"};
 
   for (int i = 0; i < sizeof(kw) / sizeof(*kw); i++) {
     int len = strlen(kw[i]);
