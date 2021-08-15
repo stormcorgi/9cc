@@ -48,27 +48,27 @@ extern Token *token;
 // Local Variable type
 typedef struct Var Var;
 struct Var {
-  Var *next; // 次の変数 or NULL
-  char *name; // 変数名
-  int offset; // RBPからのオフセット(Relational Base Posetion)
+  Var *next;   // 次の変数 or NULL
+  char *name;  // 変数名
+  int offset;  // RBPからのオフセット(Relational Base Posetion)
 };
 
 typedef enum {
-  ND_ADD,     // +
-  ND_SUB,     // -
-  ND_MUL,     // *
-  ND_DIV,     // /
-  ND_EQ,      // ==
-  ND_NE,      // !=
-  ND_LT,      // <
-  ND_LE,      // <=
-  ND_ASSIGN,  // =
-  ND_VAR,     // variable
-  ND_RETURN,  // "return"
-  ND_EXPR_STMT,// Expression statement
-  ND_NUM,     // Integer
+  ND_ADD,        // +
+  ND_SUB,        // -
+  ND_MUL,        // *
+  ND_DIV,        // /
+  ND_EQ,         // ==
+  ND_NE,         // !=
+  ND_LT,         // <
+  ND_LE,         // <=
+  ND_ASSIGN,     // =
+  ND_VAR,        // variable
+  ND_RETURN,     // "return"
+  ND_IF,         // if statement
+  ND_EXPR_STMT,  // Expression statement
+  ND_NUM,        // Integer
 } NodeKind;
-
 
 // AST node type
 typedef struct Node Node;
@@ -78,7 +78,11 @@ struct Node {
   Node *lhs;      // 左辺
   Node *rhs;      // 右辺
   int val;        // kindがND_NUMの時だけ使う
-  Var *var;      // kindがND_VARの時使用
+  Var *var;       // kindがND_VARの時使用
+  // if statement
+  Node *cond;
+  Node *then;
+  Node *els;
 };
 
 typedef struct {

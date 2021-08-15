@@ -59,6 +59,8 @@ Node *mul();
 Node *unary();
 Node *primary();
 
+Node *read_expr_stmt() { return new_unary(ND_EXPR_STMT, expr()); }
+
 Program *program() {
   locals = NULL;
 
@@ -78,6 +80,7 @@ Program *program() {
 }
 
 // stmt = "return" expr ";"
+//      | "if" "(" expr ")" stmt ("else" stmt)?
 //      | expr ";"
 Node *stmt() {
   if (consume("return")) {
@@ -86,7 +89,18 @@ Node *stmt() {
     return node;
   }
 
-  Node *node = new_unary(ND_EXPR_STMT, expr());
+  if (consume("if")) {
+    Node *node = new_node(ND_IF);
+    expect("(");
+    node->cond = expr();
+    expect(")");
+    node->then = stmt();
+    if (consume("else")) node->els = stmt();
+    return node;
+  }
+
+  // simply statement
+  Node *node = read_expr_stmt();
   expect(";");
   return node;
 }
