@@ -41,17 +41,23 @@ void error_tok(Token *tok, char *fmt, ...) {
   exit(1);
 }
 
-//次のトークンが期待している記号なら、トークンを一つ読み進めて真。それ以外は偽。
-Token *consume(char *op) {
-  if (token->kind != TK_RESERVED || strlen(op) != token->len ||
-      memcmp(token->str, op, token->len))
+// 引数の文字列と現在のトークンが一致した場合真。そうでない場合NULLを返す。
+Token *peek(char *s) {
+  if (token->kind != TK_RESERVED || strlen(s) != token->len ||
+      memcmp(token->str, s, token->len))
     return NULL;
+  return token;
+}
+
+//次のトークンが期待している記号なら、トークンを一つ読み進める。そうでない場合NULLを返す。
+Token *consume(char *s) {
+  if (!peek(s)) return NULL;
   Token *t = token;
   token = token->next;
   return t;
 }
 
-// 現在のトークンが識別子なら、トークンを一つ読み進める。
+// 現在のトークンが識別子なら、トークンを一つ読み進める。そうでない場合NULLを返す。
 Token *consume_ident() {
   if (token->kind != TK_IDENT) return NULL;
   Token *t = token;
@@ -60,10 +66,8 @@ Token *consume_ident() {
 }
 
 // 次のトークンが期待している記号のとき、トークンを一つ読み進める。それ以外の時はエラー。
-void expect(char *op) {
-  if (token->kind != TK_RESERVED || strlen(op) != token->len ||
-      memcmp(token->str, op, token->len))
-    error_tok(token, "expected \"%s\"", op);
+void expect(char *s) {
+  if (!peek(s)) error_tok(token, "expected \"%s\"", s);
   token = token->next;
 }
 
@@ -105,7 +109,7 @@ bool startswith(char *p, char *q) { return memcmp(p, q, strlen(q)) == 0; }
 
 char *starts_with_reserved(char *p) {
   // keyword
-  static char *kw[] = {"return", "if", "else", "while", "for"};
+  static char *kw[] = {"return", "if", "else", "while", "for", "int"};
 
   for (int i = 0; i < sizeof(kw) / sizeof(*kw); i++) {
     int len = strlen(kw[i]);

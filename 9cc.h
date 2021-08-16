@@ -32,6 +32,7 @@ struct Token {
 void error(char *fmt, ...);
 void error_at(char *loc, char *fmt, ...);
 void error_tok(Token *tok, char *fmt, ...);
+Token *peek(char *s);
 Token *consume(char *op);
 Token *consume_ident();
 void expect(char *op);
@@ -53,6 +54,7 @@ extern Token *token;
 typedef struct Var Var;
 struct Var {
   char *name;  // 変数名
+  Type *ty;    // 型
   int offset;  // RBPからのオフセット(Relational Base Posetion)
 };
 
@@ -83,6 +85,7 @@ typedef enum {
   ND_FUNCALL,    // Function call
   ND_ADDR,       // "&" address reference
   ND_DEREF,      // "*" for address dereference
+  ND_NULL,       // empty statement
 } NodeKind;
 
 // AST node type
@@ -130,6 +133,9 @@ struct Type {
   TypeKind kind;
   Type *base;
 };
+
+Type *int_type();
+Type *pointer_to(Type *base);
 
 void add_type(Function *prog);
 
