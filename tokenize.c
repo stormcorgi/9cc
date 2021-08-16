@@ -59,6 +59,14 @@ int expect_number() {
   return val;
 }
 
+// 現在のトークンがTL_IDENTのとき、トークンを一つ読み進め、識別子の文字列を返す。それ以外のときはエラー。
+char *expect_ident() {
+  if (token->kind != TK_IDENT) error_at(token->str, "expected an identifier");
+  char *s = strndup(token->str, token->len);
+  token = token->next;
+  return s;
+}
+
 bool at_eof() { return token->kind == TK_EOF; }
 
 // 新しいトークンを作成してcurにつなげる

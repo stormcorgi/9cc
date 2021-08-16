@@ -4,6 +4,8 @@
 int labelseq = 0;
 // for func call with arguments
 char *argreg[] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
+// for func definition
+char *funcname;
 
 // pushes the given node's address to the stack
 void gen_addr(Node *node) {
@@ -141,7 +143,7 @@ void gen(Node *node) {
       printf("//ND_RETURN\n");
       gen(node->lhs);
       printf("    pop rax\n");
-      printf("    jmp .Lreturn\n");
+      printf("    jmp .Lreturn.%s\n", funcname);
       return;
   }
 
@@ -195,27 +197,30 @@ void gen(Node *node) {
   printf("    push rax\n");
 }
 
-void codegen(Program *prog) {
-  //アセンブリの前半部分
+void codegen(Function *prog) {
   printf(".intel_syntax noprefix\n");
-  printf(".globl main\n");
-  printf("main:\n");
 
-  // Prologue
-  printf("//Prologue\n");
-  printf("    push rbp\n");
-  printf("    mov rbp, rsp\n");
-  printf("    sub rsp, %d\n", prog->stack_size);
+  for (Function *fn = prog; fn; fn = fn->next) {
+    printf(".globl %s\n", fn->name);
+    printf("%s:\n", fn->name);
+    funcname = fn->name;
 
-  // 抽象構文木を降りながらコード生成
-  for (Node *node = prog->node; node; node = node->next) {
-    gen(node);
+    // Prologue
+    printf("//Prologue\n");
+    printf("    push rbp\n");
+    printf("    mov rbp, rsp\n");
+    printf("    sub rsp, %d\n", fn->stack_size);
+
+    // 抽象構文木を降りながらコード生成
+    for (Node *node = fn->node; node; node = node->next) {
+      gen(node);
+    }
+
+    // Epilogue
+    printf("//Epilogue\n");
+    printf(".Lreturn.%s:\n", funcname);
+    printf("    mov rsp, rbp\n");
+    printf("    pop rbp\n");
+    printf("    ret\n");
   }
-
-  // Epilogue
-  printf("//Epilogue\n");
-  printf(".Lreturn:\n");
-  printf("    mov rsp, rbp\n");
-  printf("    pop rbp\n");
-  printf("    ret\n");
 }
