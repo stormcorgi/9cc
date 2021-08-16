@@ -49,9 +49,14 @@ extern Token *token;
 // Local Variable type
 typedef struct Var Var;
 struct Var {
-  Var *next;   // 次の変数 or NULL
   char *name;  // 変数名
   int offset;  // RBPからのオフセット(Relational Base Posetion)
+};
+
+typedef struct VarList VarList;
+struct VarList {
+  VarList *next;
+  Var *var;
 };
 
 typedef enum {
@@ -101,8 +106,9 @@ typedef struct Function Function;
 struct Function {
   Function *next;
   char *name;
+  VarList *params;
   Node *node;
-  Var *locals;
+  VarList *locals;
   int stack_size;
 };
 
