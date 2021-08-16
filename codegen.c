@@ -7,12 +7,18 @@ char *argreg[] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
 // for func definition
 char *funcname;
 
+void gen(Node *node);
+
 // pushes the given node's address to the stack
 void gen_addr(Node *node) {
-  if (node->kind == ND_VAR) {
-    printf("    lea rax, [rbp-%d]\n", node->var->offset);
-    printf("    push rax\n");
-    return;
+  switch (node->kind) {
+    case ND_VAR:
+      printf("    lea rax, [rbp-%d]\n", node->var->offset);
+      printf("    push rax\n");
+      return;
+    case ND_DEREF:
+      gen(node->lhs);
+      return;
   }
 
   error_tok(node->tok, "not an lvalue.");
@@ -139,6 +145,13 @@ void gen(Node *node) {
       printf("    push rax\n");
       return;
     }
+    case ND_ADDR:
+      gen_addr(node->lhs);
+      return;
+    case ND_DEREF:
+      gen(node->lhs);
+      load();
+      return;
     case ND_RETURN:
       printf("//ND_RETURN\n");
       gen(node->lhs);

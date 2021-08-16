@@ -79,6 +79,8 @@ typedef enum {
   ND_FOR,        //"for"
   ND_BLOCK,      // {}
   ND_FUNCALL,    // Function call
+  ND_ADDR,       // "&" address reference
+  ND_DEREF,      // "*" for address dereference
 } NodeKind;
 
 // AST node type
