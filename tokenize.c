@@ -59,7 +59,7 @@ int expect_number() {
   return val;
 }
 
-// 現在のトークンがTL_IDENTのとき、トークンを一つ読み進め、識別子の文字列を返す。それ以外のときはエラー。
+// 現在のトークンがTK_IDENTのとき、トークンを一つ読み進め、識別子の文字列を返す。それ以外のときはエラー。
 char *expect_ident() {
   if (token->kind != TK_IDENT) error_at(token->str, "expected an identifier");
   char *s = strndup(token->str, token->len);
