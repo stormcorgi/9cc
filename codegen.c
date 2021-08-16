@@ -2,6 +2,8 @@
 
 // for if statements
 int labelseq = 0;
+// for func call with arguments
+char *argreg[] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
 
 // pushes the given node's address to the stack
 void gen_addr(Node *node) {
@@ -103,10 +105,22 @@ void gen(Node *node) {
     case ND_BLOCK:
       for (Node *n = node->body; n; n = n->next) gen(n);
       return;
-    case ND_FUNCALL:
+    case ND_FUNCALL: {
+      int nargs = 0;
+
+      for (Node *arg = node->args; arg; arg = arg->next) {
+        gen(arg);
+        nargs++;
+      }
+
+      for (int i = nargs - 1; i >= 0; i--) {
+        printf("    pop %s\n", argreg[i]);
+      }
+
       printf("    call %s\n", node->funcname);
       printf("    push rax\n");
       return;
+    }
     case ND_RETURN:
       printf("//ND_RETURN\n");
       gen(node->lhs);
@@ -178,7 +192,6 @@ void codegen(Program *prog) {
   printf("    sub rsp, %d\n", prog->stack_size);
 
   // 抽象構文木を降りながらコード生成
-  // for (Node *n = node; n; n = n->next) {
   for (Node *node = prog->node; node; node = node->next) {
     gen(node);
   }

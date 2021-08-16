@@ -91,6 +91,7 @@ struct Node {
   Node *body;
   // function call
   char *funcname;
+  Node *args;
   Var *var;  // kind == ND_VAR
   int val;   // kind == ND_NUM
 };
