@@ -12,11 +12,8 @@ void error(char *fmt, ...) {
   exit(1);
 }
 
-// エラー箇所を報告
-void error_at(char *loc, char *fmt, ...) {
-  va_list ap;
-  va_start(ap, fmt);
-
+// エラー箇所を報告し、終了(void)
+void verror_at(char *loc, char *fmt, va_list ap) {
   int pos = loc - user_input;
   fprintf(stderr, "%s\n", user_input);
   fprintf(stderr, "%*s", pos, " ");  // pos個の空白出力
@@ -26,13 +23,32 @@ void error_at(char *loc, char *fmt, ...) {
   exit(1);
 }
 
+// verror_atを呼び出し、エラー箇所を報告し、終了(void)
+void error_at(char *loc, char *fmt, ...) {
+  va_list ap;
+  va_start(ap, fmt);
+  verror_at(loc, fmt, ap);
+}
+
+// エラー箇所を報告し、終了
+void error_tok(Token *tok, char *fmt, ...) {
+  va_list ap;
+  va_start(ap, fmt);
+  if (tok) verror_at(tok->str, fmt, ap);
+
+  fprintf(stderr, fmt, ap);
+  fprintf(stderr, "\n");
+  exit(1);
+}
+
 //次のトークンが期待している記号なら、トークンを一つ読み進めて真。それ以外は偽。
-bool consume(char *op) {
+Token *consume(char *op) {
   if (token->kind != TK_RESERVED || strlen(op) != token->len ||
       memcmp(token->str, op, token->len))
-    return false;
+    return NULL;
+  Token *t = token;
   token = token->next;
-  return true;
+  return t;
 }
 
 // 現在のトークンが識別子なら、トークンを一つ読み進める。
@@ -47,13 +63,13 @@ Token *consume_ident() {
 void expect(char *op) {
   if (token->kind != TK_RESERVED || strlen(op) != token->len ||
       memcmp(token->str, op, token->len))
-    error_at(token->str, "'%s'ではありません", op);
+    error_tok(token, "expected \"%s\"", op);
   token = token->next;
 }
 
 // 次のトークンが数字のとき、トークンを一つ読み進め、値を返す。それ以外の時はエラー。
 int expect_number() {
-  if (token->kind != TK_NUM) error_at(token->str, "数字ではありません");
+  if (token->kind != TK_NUM) error_tok(token, "expected a number");
   int val = token->val;
   token = token->next;
   return val;
@@ -61,7 +77,7 @@ int expect_number() {
 
 // 現在のトークンがTK_IDENTのとき、トークンを一つ読み進め、識別子の文字列を返す。それ以外のときはエラー。
 char *expect_ident() {
-  if (token->kind != TK_IDENT) error_at(token->str, "expected an identifier");
+  if (token->kind != TK_IDENT) error_tok(token, "expected an identifier");
   char *s = strndup(token->str, token->len);
   token = token->next;
   return s;
