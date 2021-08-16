@@ -117,7 +117,23 @@ void gen(Node *node) {
         printf("    pop %s\n", argreg[i]);
       }
 
+      // RSP must aligned on a 16byte boundary (ABI requirements).
+      // pop moves RSP by 8byte, so RSP could aligned 16byte boundary in 50%
+      int seq = labelseq++;
+      printf("    mov rax, rsp\n");
+      printf("    and rax, 15\n");
+      printf("    jnz .Lcall%d\n", seq);
+      // RSP aligned on 16byte boundary.
+      printf("    mov rax, 0\n");
+      printf("    call  %s\n", node->funcname);
+      printf("    jmp .Lend%d\n", seq);
+      // RSP is not aligned on 16byte, -8 rsp -> call func -> +8 rsp
+      printf(".Lcall%d:\n", seq);
+      printf("    sub rsp, 8\n");
+      printf("    mov rax, 0\n");
       printf("    call %s\n", node->funcname);
+      printf("    add rsp, 8\n");
+      printf(".Lend%d:\n", seq);
       printf("    push rax\n");
       return;
     }
